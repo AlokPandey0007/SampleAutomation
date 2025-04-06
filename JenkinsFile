@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven "MAVEN_HOME"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Get some code from a GitHub repository
+               checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/AlokPandey0007/SampleAutomation']])
+               }
+            }
+            stage ('Build')
+            {
+                steps{
+                    // To run Maven on a Windows agent, use
+                bat "mvn clean install"
+                }
+            }
+            stage ('Sonar Analysis')
+            {
+                steps{
+                withSonarQubeEnv('SonarQube_Test') {
+                
+                    // To run Maven on a Windows agent, use
+                bat "mvn  sonar:sonar"
+                }}
+            }
+            
+    }
+}
